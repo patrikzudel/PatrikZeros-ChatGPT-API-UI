@@ -6,7 +6,11 @@
   ## 📖 How to use
   - Visit the GitHub Pages release [here](https://chat.patrikzudel.me/).
   - Or to run locally, pull the repository and run ```npm run dev```
-  - **If you don't know your API key make one [here](https://platform.openai.com/account/api-keys) and don't forget to setup billing for it to work.**
+  - **Guide** If you don't know your API key:
+    - **Register / Login** [here](https://platform.openai.com/account/api-keys)
+      - Setup your **billing** [here](https://platform.openai.com/account/billing/overview), don't forget to set a **billing limit** as well [here](https://platform.openai.com/account/billing/limits). And then generate an **API key** [here](https://platform.openai.com/account/api-keys). You should be able to find  everything in the top right corner "**Manage Account**" page.
+      - Once you have your API key just go to **Settings** on my app in the bottom left corner and from there you should see it right away.
+
 
 
 ## ⚡ Features
