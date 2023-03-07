@@ -37,9 +37,15 @@
       >
         <img class="icon-white w-8" alt="Close" src={CloseIcon} />
       </button>
-      <h2 class="text-xl font-bold mb-4">Settings</h2>
+      <h2 class="text-xl mb-2 font-bold ">Settings</h2>
       <div class="mb-4">
-        <label for="api-key" class="block font-medium mb-2">API Key</label>
+        <label for="api-key" class="block font-medium mb-2"
+          >API Key <a
+            class="text-blue-300"
+            href="https://github.com/patrikzudel/PatrikZeros-ChatGPT-API-UI/blob/main/README.md"
+            >(Tutorial)</a
+          ></label
+        >
         <input
           type="password"
           id="api-key"
@@ -79,10 +85,16 @@
           <img class="icon-white w-3" alt="Close" src={CloseIcon} />
         </button>
       </div>
-      <button
-        class="bg-good hover:bg-good2 transition-colors duration-200 text-white py-2 px-4 rounded"
-        on:click={handleSave}>Save</button
-      >
+      <div class="flex justify-between items-end">
+        <button
+          class="bg-good hover:bg-good2 transition-colors duration-200 text-white py-2 px-4 rounded"
+          on:click={handleSave}>Save</button
+        >
+        <a
+          href="https://github.com/patrikzudel/PatrikZeros-ChatGPT-API-UI"
+          class="text-sm text-gray-400">GitHub</a
+        >
+      </div>
     </div>
   </div>
 </div>
