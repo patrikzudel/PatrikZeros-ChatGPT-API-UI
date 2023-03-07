@@ -10,7 +10,7 @@
   };
 </script>
 
-<pre class="{lang} p-5 md:m-5 m-0" style="position:relative">
+<pre class="{lang} p-5 pb-0 md:m-5 mx-0 my-3" style="position:relative">
 <code>{text}</code>
 <button on:click={copyToClipboard}>Copy to Clipboard</button>
 </pre>
