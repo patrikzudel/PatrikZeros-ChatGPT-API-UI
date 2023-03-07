@@ -10,7 +10,7 @@
   };
 </script>
 
-<pre class={lang} style="position:relative">
+<pre class="{lang} p-5 md:m-5 m-0" style="position:relative">
 <code>{text}</code>
 <button on:click={copyToClipboard}>Copy to Clipboard</button>
 </pre>
@@ -21,8 +21,6 @@
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    margin: 20px;
 
     opacity: 0;
     animation: fade-in 0.5s ease-in-out forwards;

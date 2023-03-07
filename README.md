@@ -32,7 +32,7 @@
     - "User" has stronger impact from what I've tried.
     
 ## 🖥️ Preview
-  <img src="https://raw.githubusercontent.com/patrikzudel/PatrikZeros-ChatGPT-API-UI/main/Preview.png" alt="Preview">
+**[!["Preview"](https://raw.githubusercontent.com/patrikzudel/PatrikZeros-ChatGPT-API-UI/main/Preview.png)](https://chat.patrikzudel.me/)**
 
 ## 💬 Reasonings
   I've been frustrated with **ChatGPT** **slowdowns**, **errors**, **constant reloading** and lack of **some features**. I was about to pay for Premium and noticed they released an API that is going to be much **cheaper** for most users. I also wanted to learn JS + a framework for a while now and this seemed like the perfect opportunity to learn. Hope you find it useful!

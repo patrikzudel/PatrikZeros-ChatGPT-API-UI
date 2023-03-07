@@ -435,7 +435,7 @@
             >
               <img class="icon-white w-8" alt="Delete" src={DeleteIcon} />
             </button>
-            <div class="px-20 text-[1rem]">
+            <div class="px-3 md:px-20 text-[1rem]">
               <SvelteMarkdown
                 renderers={{
                   code: CodeRenderer,
