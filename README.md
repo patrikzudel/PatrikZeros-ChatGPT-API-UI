@@ -18,13 +18,13 @@
 - Ability to use your own OpenAI API key.
 - No minimum cost, great for students!
   - Cheaper than ChatGPT Premium for most users.
-  
+- Usage estimator for pricing - See how much you've spent so far!
+  - Estimating token count (4chars = 1token)
 - Token / cost saving features:
   - Send message without history. 
     - When you are asking a sequence of unrelated questions, don't bother sending the whole history!
 
   - Summarize the chat, useful if you have a message over the 4k token limit but you want to keep the context.
-
 - Ability to set a default system message. 
   - This sets the role of the assistant, and provides it additional information
     - Example uses:
