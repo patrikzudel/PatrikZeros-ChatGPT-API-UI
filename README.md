@@ -27,14 +27,15 @@
   - This sets the role of the assistant, and provides it additional information
     - Example uses:
       - For telling the assistant which technology stack you're using so you don't have to repeat yourself.
-      - For roleplaying a character.
-
+      - For roleplaying a character
   - You can also switch between it being a "System" message or "User" message for finer control.
     - "User" has stronger impact from what I've tried.
+    
+## 🖥️ Preview
+  <img src="https://raw.githubusercontent.com/patrikzudel/PatrikZeros-ChatGPT-API-UI/main/Preview.png" alt="Preview">
 
-
-  ## 💬 Reasonings
-I've been frustrated with **ChatGPT** **slowdowns**, **errors**, **constant reloading** and lack of **some features**. I was about to pay for Premium and noticed they released an API that is going to be much **cheaper** for most users. I also wanted to learn JS + a framework for a while now and this seemed like the perfect opportunity to learn. Hope you find it useful!
+## 💬 Reasonings
+  I've been frustrated with **ChatGPT** **slowdowns**, **errors**, **constant reloading** and lack of **some features**. I was about to pay for Premium and noticed they released an API that is going to be much **cheaper** for most users. I also wanted to learn JS + a framework for a while now and this seemed like the perfect opportunity to learn. Hope you find it useful!
 
 ## 📖 How it works
 
