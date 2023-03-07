@@ -2,7 +2,7 @@
 <img src="https://raw.githubusercontent.com/patrikzudel/PatrikZeros-ChatGPT-API-UI/main/LogoDark.png?sanitize=true#gh-light-mode-only" alt="Logo">
 
 #### Static website that allows you to use your OpenAI API key for the same experience as you get with ChatGPT!
-#####⭐️ Star the repo if you like it!
+####⭐️ Star the repo if you like it!
 
   ## 📖 How to use
   - Visit the GitHub Pages release [here](https://chat.patrikzudel.me/).
