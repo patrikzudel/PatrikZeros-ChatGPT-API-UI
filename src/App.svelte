@@ -104,9 +104,13 @@
 
   // Sets history in current conversation.
   // @param {ChatCompletionRequestMesasge[]} msg
-  function setHistory(msg: ChatCompletionRequestMessage[]) {
+  // optional @param {number} convId : Allows selecting the conversation
+  function setHistory(
+    msg: ChatCompletionRequestMessage[],
+    convId: number = $chosenConversationId
+  ) {
     let conv = $conversations;
-    conv[$chosenConversationId].history = msg;
+    conv[convId].history = msg;
     conversations.set(conv);
   }
 
@@ -178,6 +182,7 @@
     let tickCounter = 0;
     let ticks = false;
     let currentHistory = $conversations[$chosenConversationId].history;
+    let currentConvId = $chosenConversationId;
     let roleMsg: ChatCompletionRequestMessage = {
       role: $defaultAssistantRole.type as ChatCompletionRequestMessageRoleEnum,
       content: $conversations[$chosenConversationId].assistantRole,
@@ -217,22 +222,28 @@
           }
           streamText = streamText + text;
           // console.log(streamText);
-          setHistory([
+          setHistory(
+            [
+              ...currentHistory,
+              {
+                role: "assistant",
+                content: streamText + "█" + (ticks ? "\n```" : ""),
+              },
+            ],
+            currentConvId
+          );
+        }
+      } else {
+        setHistory(
+          [
             ...currentHistory,
             {
               role: "assistant",
-              content: streamText + "█" + (ticks ? "\n```" : ""),
+              content: streamText,
             },
-          ]);
-        }
-      } else {
-        setHistory([
-          ...currentHistory,
-          {
-            role: "assistant",
-            content: streamText,
-          },
-        ]);
+          ],
+          currentConvId
+        );
         estimateTokens(msg);
         streamText = "";
         done = true;
