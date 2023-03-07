@@ -1,16 +1,12 @@
-
-
-<p style="text-alin: left; font-weight:700; font-size: 3rem;margin-bottom:0px;padding-right:10rem;text-align:center; ">
-          PatrikZero's
-        </p>
-<p style="text-align:center; font-weight:700; font-size: 4rem; line-height: 2rem; padding-bottom: 2rem; margin-top: 0px; padding-top: 0px;">ChatGPT UI</p>
+<img src="https://raw.githubusercontent.com/patrikzudel/PatrikZeros-ChatGPT-API-UI/main/LogoLight.png?sanitize=true#gh-dark-mode-only" alt="Logo">
+<img src="https://raw.githubusercontent.com/patrikzudel/PatrikZeros-ChatGPT-API-UI/main/LogoDark.png?sanitize=true#gh-light-mode-only" alt="Logo">
 
 #### Static website that allows you to use your OpenAI API key for the same experience as you get with ChatGPT!
 
   ## 📖 How to use
   - Visit the GitHub Pages release [here](https://chat.patrikzudel.me/).
   - Or to run locally, pull the repository and run ```npm run dev```
-  - **If you don't know your API key make one here and don't forget to setup billing for it to work.**
+  - **If you don't know your API key make one [here](https://platform.openai.com/account/api-keys) and don't forget to setup billing for it to work.**
 
 
 ## ⚡ Features
@@ -23,8 +19,10 @@
 - Token / cost saving features:
   - Send message without history. 
     - When you are asking a sequence of unrelated questions, don't bother sending the whole history!
-
   - Summarize the chat, useful if you have a message over the 4k token limit but you want to keep the context.
+- More features for jailbreaking
+  - Ability to fake a "Assistant" message
+  - More below
 - Ability to set a default system message. 
   - This sets the role of the assistant, and provides it additional information
     - Example uses:
