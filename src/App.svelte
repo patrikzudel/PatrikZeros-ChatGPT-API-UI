@@ -116,9 +116,9 @@
 
   // Sets conversation title to str.
   // @param {string} str
-  function setTitle(title: string) {
+  function setTitle(title: string, id: number = $chosenConversationId) {
     let conv = $conversations;
-    conv[$chosenConversationId].title = title;
+    conv[id].title = title;
     conversations.set(conv);
   }
 
@@ -310,7 +310,8 @@
   //   Attempts to create a title for the conversation.
   //   @param {string} currentInput - Users request message.
   async function createTitle(currentInput: string) {
-    if ($conversations[$chosenConversationId].title !== "") {
+    let currentConvId = $chosenConversationId;
+    if ($conversations[currentConvId].title !== "") {
       return;
     }
     let response = await sendRequest([
@@ -323,7 +324,7 @@
     ]);
     if (response) {
       let message = response.data.choices[0].message.content;
-      setTitle(message.toString());
+      setTitle(message.toString(), currentConvId);
     }
     console.log("Title created");
   }
