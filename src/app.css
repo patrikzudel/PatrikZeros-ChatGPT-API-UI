@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+    font-family : 'Segoe UI', sans-serif; 
+}
+
+body {
+    background-color: #21252b;
+}
+
+
+  .icon-white {
+    filter: invert(75%);
+  }
