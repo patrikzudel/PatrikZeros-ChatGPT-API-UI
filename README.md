@@ -20,7 +20,7 @@
 - No minimum cost, great for students!
   - Cheaper than ChatGPT Premium for most users.
 - Usage calculator for pricing - See how much you've spent so far!
-  - Calculating token count with OpenAI's Tokenizer.
+  - Calculating token count with OpenAI's [Tokenizer](https://platform.openai.com/tokenizer).
     - Could be not 100% accurate, but its pretty good!
 - Token / cost saving features:
   - Send message without history. 
