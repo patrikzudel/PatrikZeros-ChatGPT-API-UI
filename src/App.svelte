@@ -32,7 +32,7 @@
   import MoreIcon from "./assets/more.svg";
   import SendIcon from "./assets/send.svg";
   import Paragraph from "./renderers/Paragraph.svelte";
-  import { encodeTokens } from "./Encoder.js";
+  import { encodeTokens } from "./Encoder";
 
   // DEFINES && SETUP
   let MSG_TYPES = {
@@ -56,6 +56,7 @@
   let input: string = "";
   let chatContainer: HTMLElement;
   let moreButtonsToggle: boolean = false;
+  let waitingForResponse: boolean = false;
 
   newChat();
 
@@ -173,6 +174,7 @@
   //   Sends request to OpenAI API with and streams the response data.
   //   @param {ChatCompletionRequestMessage[]} msg - Array of messages. Probably history + new message.
   function createStream(msg: ChatCompletionRequestMessage[]) {
+    waitingForResponse = true;
     let tickCounter = 0;
     let ticks = false;
     let currentHistory = $conversations[$chosenConversationId].history;
@@ -207,6 +209,7 @@
         let text = payload.choices[0].delta.content;
         if (text == undefined) typing = !typing;
         if (text != undefined) {
+          waitingForResponse = false;
           let msgTicks = countTicks(text);
           tickCounter += msgTicks;
           if (msgTicks == 0) tickCounter = 0;
@@ -256,6 +259,7 @@
     source.addEventListener("error", (e) => {
       if (done) return;
       configuration = null;
+      waitingForResponse = false;
       let errorData;
       try {
         errorData = JSON.parse(e.data);
@@ -484,6 +488,13 @@
             </div>
           </div>
         {/each}
+        {#if waitingForResponse}
+          <div class="bg-hover2 w-full flex justify-center py-5">
+            <div
+              class="border-[4px] border-solid border-chat w-6 h-6 rounded-full border-t-[4px] border-t-good2 animate-spin"
+            />
+          </div>
+        {/if}
       </div>
     </div>
 
