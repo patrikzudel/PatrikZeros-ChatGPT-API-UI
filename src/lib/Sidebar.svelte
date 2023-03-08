@@ -25,6 +25,9 @@ You are a therapist. ETC...`;
   }
 
   function deleteConversation(i: number) {
+    if ($conversations.length === 1) {
+      return;
+    }
     let conv = $conversations.filter((value, index) => index !== i);
     if (i < $chosenConversationId || i == $chosenConversationId) {
       chosenConversationId.set($chosenConversationId - 1);
