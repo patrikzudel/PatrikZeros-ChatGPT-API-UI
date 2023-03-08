@@ -21,6 +21,7 @@
       type: assistantRoleTypeField,
     });
     apiKey.set(apiTextField);
+    handleClose();
   }
   function handleClose() {
     settingsVisible.set(false);
