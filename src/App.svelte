@@ -56,7 +56,7 @@
   let chatContainer: HTMLElement;
   let moreButtonsToggle: boolean = false;
 
-  const errorMessage: ChatCompletionRequestMessage[] = [
+  let errorMessage: ChatCompletionRequestMessage[] = [
     {
       role: "assistant",
       content:
@@ -255,6 +255,12 @@
     source.addEventListener("error", (e) => {
       if (done) return;
       configuration = null;
+      errorMessage = [
+        {
+          role: "assistant",
+          content: " ⚠️ "+ JSON.parse(e.data).error.message + " ⚠️ ",
+        },
+      ];
       setHistory([...currentHistory, ...errorMessage]);
       console.error(e);
       console.log("Stream closed on error");
