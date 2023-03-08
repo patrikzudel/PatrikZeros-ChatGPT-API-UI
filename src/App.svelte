@@ -458,7 +458,7 @@
     <!-- CHAT INPUT WINDOW BEGINNING -->
     <div class="flex p-2 bg-primary mt-auto">
       <textarea
-        class="w-full min-h-[96px] h-24 rounded p-2 mx-1 mr-0 rounded-r-none bg-chat resize-none focus: outline-none"
+        class="w-full min-h-[96px] h-24 rounded p-2 mx-1 mr-0 rounded-r-none bg-chat resize-none md:resize-y focus: outline-none"
         placeholder="Type your message"
         on:keydown={(event) => {
           if (event.key === "Enter") {
@@ -506,7 +506,7 @@
               sendMessage(MSG_TYPES.WITHOUT_HISTORY);
             }}>Send without history</button
           >
-          <div class="flex-col hidden md:flex max-h-[96px]">
+          <div class="flex-col hidden md:flex ">
             <button
               class="bg-good2 flex-1 rounded mb-2 py-2 px-4 mx-1"
               on:click={() => {
