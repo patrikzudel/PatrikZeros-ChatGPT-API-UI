@@ -19,8 +19,9 @@
 - Ability to use your own OpenAI API key.
 - No minimum cost, great for students!
   - Cheaper than ChatGPT Premium for most users.
-- Usage estimator for pricing - See how much you've spent so far!
-  - Estimating token count (4chars = 1token)
+- Usage calculator for pricing - See how much you've spent so far!
+  - Calculating token count with OpenAI's Tokenizer.
+    - Could be not 100% accurate, but its pretty good!
 - Token / cost saving features:
   - Send message without history. 
     - When you are asking a sequence of unrelated questions, don't bother sending the whole history!

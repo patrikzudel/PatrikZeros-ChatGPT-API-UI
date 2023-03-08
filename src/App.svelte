@@ -32,6 +32,7 @@
   import MoreIcon from "./assets/more.svg";
   import SendIcon from "./assets/send.svg";
   import Paragraph from "./renderers/Paragraph.svelte";
+  import { encodeTokens } from "./Encoder.js";
 
   // DEFINES && SETUP
   let MSG_TYPES = {
@@ -237,7 +238,14 @@
           ],
           currentConvId
         );
-        estimateTokens(msg);
+        msg = [
+          ...msg,
+          {
+            role: "assistant",
+            content: streamText,
+          },
+        ];
+        addTokens(countMessagesTokens(msg));
         streamText = "";
         done = true;
         console.log("Stream closed");
@@ -260,6 +268,9 @@
         };
       }
       let errorMessage = errorData.error.message;
+
+      console.log("Attempted message tokens");
+      console.log(countMessagesTokens(currentHistory));
       setHistory([
         ...currentHistory,
         {
@@ -275,33 +286,34 @@
     source.stream();
   }
 
-  //   Estimates the number of tokens from the character count of the messages in msg.
+  //   Calculates the tokens contained in a msg[] using gpt-3-encoder.
+  //   Including the tokens of the latest streamed message. (streamText)
   //   @param {ChatCompletionRequestMessage[]} msg - Array of messages. Probably history + new message.
-  function estimateTokens(msg: ChatCompletionRequestMessage[]) {
-    let chars = 0;
+  function countMessagesTokens(msg: ChatCompletionRequestMessage[]): number {
+    let tokenCount = 0;
     msg.map((m) => {
-      chars += m.content.length;
+      let historyTokens = encodeTokens(m.content);
+      tokenCount += historyTokens.length;
     });
-    chars += streamText.length;
-    let tokens = chars / 4;
+    console.log("Gpt-3-counter Tokens in msg: " + tokenCount);
+    console.log(msg);
+    return tokenCount;
+  }
+
+  //   Adds the tokens to the current conversation and the global counter.
+  //   @param {number} tokenCount : Number of tokens.
+  function addTokens(tokenCount: number) {
     let conv = $conversations;
     conv[$chosenConversationId].conversationTokens =
-      conv[$chosenConversationId].conversationTokens + tokens;
+      conv[$chosenConversationId].conversationTokens + tokenCount;
     conversations.set(conv);
-    combinedTokens.set($combinedTokens + tokens);
+    combinedTokens.set($combinedTokens + tokenCount);
   }
 
   //   Sends request to OpenAI API without streaming text.
   //   @param {ChatCompletionRequestMessage[]} msg - Array of messages. Probably history + new message.
   async function sendRequest(msg: ChatCompletionRequestMessage[]) {
     {
-      msg = [
-        {
-          role: "system",
-          content: $conversations[$chosenConversationId].assistantRole,
-        },
-        ...msg,
-      ];
       console.log("Sending request");
       const response = await openai
         .createChatCompletion({
@@ -324,14 +336,15 @@
     if ($conversations[currentConvId].title !== "") {
       return;
     }
-    let response = await sendRequest([
+    let msg: ChatCompletionRequestMessage[] = [
       { role: "user", content: currentInput },
       {
         role: "user",
         content:
           "Excluding this summarization request, summarize my previous request in a natural way in max 4 words.",
       },
-    ]);
+    ];
+    let response = await sendRequest(msg);
     if (response) {
       let message = response.data.choices[0].message.content;
       setTitle(message.toString(), currentConvId);
@@ -392,12 +405,13 @@
   //   Adds the number of tokens from a request to the combined tokens.
   //   @param {Object} usage - An object containing the total tokens used in a request.
   function countTokens(usage) {
+    console.log("Reported tokens from response: ");
+    console.log(usage);
     let conv = $conversations;
     conv[$chosenConversationId].conversationTokens =
       conv[$chosenConversationId].conversationTokens + usage.total_tokens;
     conversations.set(conv);
     combinedTokens.set($combinedTokens + usage.total_tokens);
-    console.log("Counted tokens: " + usage.total_tokens);
   }
 
   afterUpdate(() => {
