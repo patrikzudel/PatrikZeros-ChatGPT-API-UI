@@ -465,6 +465,7 @@
             if (event.shiftKey) {
               return;
             } else {
+              event.preventDefault();
               sendMessage(MSG_TYPES.WITH_HISTORY);
             }
           }
