@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm install && \
     npm cache clean --force && \
     rm -rf /root/.npm /root/.node-gyp && \
-    rm -rf /usr/src/app/package-lock.json && \
+    rm -rf /usr/src/app/package-lock.json
 # Copy application code
 COPY . .
 
