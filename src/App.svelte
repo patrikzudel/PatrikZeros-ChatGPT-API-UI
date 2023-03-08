@@ -158,7 +158,7 @@
     if (configuration === null) {
       setHistory([
         {
-          role: "assistant",
+          role: "system",
           content: "Enter your OpenAI API key in the Settings.",
         },
       ]);
