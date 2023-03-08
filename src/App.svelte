@@ -56,13 +56,6 @@
   let chatContainer: HTMLElement;
   let moreButtonsToggle: boolean = false;
 
-  const errorMessage: ChatCompletionRequestMessage[] = [
-    {
-      role: "assistant",
-      content:
-        "There was an error. Maybe the API key is wrong? Or the servers could be down?",
-    },
-  ];
   newChat();
 
   // Functions
@@ -255,9 +248,27 @@
     source.addEventListener("error", (e) => {
       if (done) return;
       configuration = null;
-      setHistory([...currentHistory, ...errorMessage]);
-      console.error(e);
+      let errorData;
+      try {
+        errorData = JSON.parse(e.data);
+      } catch {
+        errorData = {
+          error: {
+            message:
+              "The servers are probably down. (Or your internet connection)",
+          },
+        };
+      }
+      let errorMessage = errorData.error.message;
+      setHistory([
+        ...currentHistory,
+        {
+          role: "system",
+          content: errorMessage,
+        },
+      ]);
       console.log("Stream closed on error");
+      console.error(e);
       source.close();
     });
 
@@ -297,9 +308,8 @@
           model: "gpt-3.5-turbo",
           messages: msg,
         })
-        .catch((error: Error) => {
+        .catch((error) => {
           configuration = null;
-          setHistory(errorMessage);
           console.error(error);
         });
       if (response) countTokens(response.data.usage);
@@ -424,9 +434,17 @@
       <div class="flex flex-col ">
         {#each $conversations[$chosenConversationId].history as message, i}
           <div
-            class="message relative inline-block {message.role === 'assistant'
-              ? 'bg-hover2'
-              : 'bg-primary'}  px-2 py-5"
+            class="message relative inline-block px-2 py-5 pb-2 {`${(() => {
+              switch (message.role) {
+                case 'assistant':
+                  return 'bg-hover2';
+                case 'user':
+                  return 'bg-primary';
+                case 'system':
+                  return 'bg-error';
+              }
+              // This below might just be the ugliest thing I've ever seen.
+            })()}`}"
           >
             <button
               class="deleteButton"
