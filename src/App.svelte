@@ -544,6 +544,7 @@
           } flex transition-all duration-100`}
         >
           <button
+            title="Sending a message without prior conversation history can save token costs."
             class="bg-good2 rounded py-2 px-4 mx-1"
             on:click={() => {
               sendMessage(MSG_TYPES.WITHOUT_HISTORY);
@@ -551,12 +552,14 @@
           >
           <div class="flex-col hidden md:flex ">
             <button
+              title="Summarizing conversations saves token costs and is ideal for preserving context in lengthy discussions."
               class="bg-good2 flex-1 rounded mb-2 py-2 px-4 mx-1"
               on:click={() => {
                 sendMessage(MSG_TYPES.SUMMARIZE);
               }}>Summarize</button
             >
             <button
+              title="Injecting assistant message from input into history; useful for jailbreaks."
               class="bg-good2 flex-1 rounded py-2 px-4 mx-1"
               on:click={() => {
                 addAssitantMessage();
