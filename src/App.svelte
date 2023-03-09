@@ -57,6 +57,7 @@
   let chatContainer: HTMLElement;
   let moreButtonsToggle: boolean = false;
   let waitingForResponse: boolean = false;
+  let lastMsgTokenCount: number = 0;
 
   newChat();
 
@@ -173,7 +174,10 @@
 
   //   Sends request to OpenAI API with and streams the response data.
   //   @param {ChatCompletionRequestMessage[]} msg - Array of messages. Probably history + new message.
-  function createStream(msg: ChatCompletionRequestMessage[]) {
+  function createStream(
+    msg: ChatCompletionRequestMessage[],
+    recursive: boolean = false
+  ) {
     waitingForResponse = true;
     let tickCounter = 0;
     let ticks = false;
@@ -188,6 +192,11 @@
     console.log("Creating stream");
     console.log("New message:");
     console.log(msg);
+    if (recursive === false) {
+      console.log("Attempted message tokens");
+      lastMsgTokenCount = countMessagesTokens(msg);
+      console.log(lastMsgTokenCount);
+    }
     let done = false;
     currentHistory = [...currentHistory];
     let source = new SSE("https://api.openai.com/v1/chat/completions", {
@@ -273,9 +282,6 @@
       }
       let errorMessage = errorData.error.message;
 
-      console.log("Attempted message tokens");
-      console.log(countMessagesTokens(originalMsg));
-
       // Handle messages over the token limit
       source.close();
       waitingForResponse = false;
@@ -284,7 +290,7 @@
           console.log(errorMessage);
           console.log("Token limit reached, attempting to shorten history");
           originalMsg.shift(); // Removes the oldest msg
-          createStream(originalMsg);
+          createStream(originalMsg, true);
           return;
         }
       }
@@ -512,72 +518,80 @@
     </div>
 
     <!-- CHAT INPUT WINDOW BEGINNING -->
-    <div class="flex p-2 bg-primary mt-auto">
-      <textarea
-        class="w-full min-h-[96px] h-24 rounded p-2 mx-1 mr-0 rounded-r-none bg-chat resize-none md:resize-y focus: outline-none"
-        placeholder="Type your message"
-        on:keydown={(event) => {
-          if (event.key === "Enter") {
-            if (event.shiftKey) {
-              return;
-            } else {
-              event.preventDefault();
-              sendMessage(MSG_TYPES.WITH_HISTORY);
+    <div class="flex-col bg-primary">
+      {#if lastMsgTokenCount >= 3500}
+        <p class="px-4 pt-1">
+          Last message too long ({lastMsgTokenCount} tokens), may start losing context
+          after 4096 tokens. Summarization advised.
+        </p>
+      {/if}
+      <div class="flex p-2 bg-primary mt-auto">
+        <textarea
+          class="w-full min-h-[96px] h-24 rounded p-2 mx-1 mr-0 rounded-r-none bg-chat resize-none md:resize-y focus: outline-none"
+          placeholder="Type your message"
+          on:keydown={(event) => {
+            if (event.key === "Enter") {
+              if (event.shiftKey) {
+                return;
+              } else {
+                event.preventDefault();
+                sendMessage(MSG_TYPES.WITH_HISTORY);
+              }
             }
-          }
-        }}
-        bind:value={input}
-      />
-      <div class="flex relative">
-        <button
-          class="bg-chat rounded py-2 px-4 mx-1 ml-0 rounded-l-none"
-          on:click={() => {
-            sendMessage(MSG_TYPES.WITH_HISTORY);
           }}
-        >
-          <img
-            class="icon-white min-w-[24px] w-[24px]"
-            alt="Send"
-            src={SendIcon}
-          />
-        </button>
-        <button
-          class="bg-hover2 rounded min-w-[40px] mx-1 flex justify-center align-middle items-center"
-          on:click={() => {
-            moreButtonsToggle = !moreButtonsToggle;
-          }}
-        >
-          <img class="icon-white w-[32px]" alt="More" src={MoreIcon} />
-        </button>
-        <div
-          class={`otherButtons ${
-            moreButtonsToggle
-              ? "translate-x-0 static"
-              : "hidden md:flex absolute translate-x-[600px] "
-          } flex transition-all duration-100`}
-        >
+          bind:value={input}
+        />
+        <div class="flex relative">
           <button
-            title="Sending a message without prior conversation history can save token costs."
-            class="bg-good2 rounded py-2 px-4 mx-1"
+            class="bg-chat rounded py-2 px-4 mx-1 ml-0 rounded-l-none"
             on:click={() => {
-              sendMessage(MSG_TYPES.WITHOUT_HISTORY);
-            }}>Send without history</button
+              sendMessage(MSG_TYPES.WITH_HISTORY);
+            }}
           >
-          <div class="flex-col hidden md:flex ">
+            <img
+              class="icon-white min-w-[24px] w-[24px]"
+              alt="Send"
+              src={SendIcon}
+            />
+          </button>
+          <button
+            class="bg-hover2 rounded min-w-[40px] mx-1 flex justify-center align-middle items-center"
+            on:click={() => {
+              moreButtonsToggle = !moreButtonsToggle;
+            }}
+          >
+            <img class="icon-white w-[32px]" alt="More" src={MoreIcon} />
+          </button>
+          <div
+            class={`otherButtons ${
+              moreButtonsToggle
+                ? "translate-x-0 static"
+                : "hidden md:flex absolute translate-x-[600px] "
+            } flex transition-all duration-100`}
+          >
             <button
-              title="Summarizing conversations saves token costs and is ideal for preserving context in lengthy discussions."
-              class="bg-good2 flex-1 rounded mb-2 py-2 px-4 mx-1"
+              title="Sending a message without prior conversation history can save token costs."
+              class="bg-good2 rounded py-2 px-4 mx-1"
               on:click={() => {
-                sendMessage(MSG_TYPES.SUMMARIZE);
-              }}>Summarize</button
+                sendMessage(MSG_TYPES.WITHOUT_HISTORY);
+              }}>Send without history</button
             >
-            <button
-              title="Injecting assistant message from input into history; useful for jailbreaks."
-              class="bg-good2 flex-1 rounded py-2 px-4 mx-1"
-              on:click={() => {
-                addAssitantMessage();
-              }}>Assistant</button
-            >
+            <div class="flex-col hidden md:flex ">
+              <button
+                title="Summarizing conversations saves token costs and is ideal for preserving context in lengthy discussions."
+                class="bg-good2 flex-1 rounded mb-2 py-2 px-4 mx-1"
+                on:click={() => {
+                  sendMessage(MSG_TYPES.SUMMARIZE);
+                }}>Summarize</button
+              >
+              <button
+                title="Injecting assistant message from input into history; useful for jailbreaks."
+                class="bg-good2 flex-1 rounded py-2 px-4 mx-1"
+                on:click={() => {
+                  addAssitantMessage();
+                }}>Assistant</button
+              >
+            </div>
           </div>
         </div>
       </div>
