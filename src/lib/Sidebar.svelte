@@ -30,7 +30,9 @@ You are a therapist. ETC...`;
     }
     let conv = $conversations.filter((value, index) => index !== i);
     if (i < $chosenConversationId || i == $chosenConversationId) {
-      chosenConversationId.set($chosenConversationId - 1);
+      if ($chosenConversationId !== 0) {
+        chosenConversationId.set($chosenConversationId - 1);
+      }
     }
     conversations.set(conv);
   }
@@ -61,13 +63,8 @@ You are a therapist. ETC...`;
         <p class="text-left px-8 font-bold text-xl ">
           PatrikZero's <br />
         </p>
-        <p class="text-center font-bold text-2xl  leading-4 pb-2">ChatGPT UI</p>
+        <p class="text-center font-bold text-2xl  leading-4">ChatGPT UI</p>
       </div>
-      <textarea
-        bind:value={$conversations[$chosenConversationId].assistantRole}
-        {placeholder}
-        class="bg-primary px-2 pt-1 pb-3 resize-none rounded  focus:outline-none focus:outline-primary"
-      />
       <div class="flex flex-col h-40 my-2 flex-grow overflow-y-auto ">
         <!-- TU ZACINA -->
         <!-- Test 10 times -->
@@ -84,7 +81,7 @@ You are a therapist. ETC...`;
             }}
             class="{$chosenConversationId === $conversations.length - i - 1
               ? 'bg-hover2 hover:bg-hover2'
-              : ''} conversation flex justify-between min-h-[64px] my-2 py-3 px-3 items-center gap-3 rounded-md hover:bg-hover cursor-pointer text-sm transition-colors duration-200"
+              : ''} conversation flex justify-between min-h-[64px] mt-2 py-3 px-3 items-center gap-3 rounded-t-md hover:bg-hover cursor-pointer text-sm transition-colors duration-200"
           >
             <p class=" text-left text-sm max-w-[178px]">
               {conv.title === "" ? "Empty conversation" : conv.title}
@@ -106,6 +103,13 @@ You are a therapist. ETC...`;
               {conv.conversationTokens.toFixed(0)}
             </p>
           </button>
+          {#if $chosenConversationId === $conversations.length - i - 1}
+            <textarea
+              bind:value={$conversations[$chosenConversationId].assistantRole}
+              {placeholder}
+              class="bg-primary px-2 pt-1 mb-2 pb-3 resize-none ronded-t-none rounded-b-md focus:outline-none focus:outline-primary"
+            />
+          {/if}
         {/each}
         <!-- TUTO KONCI PRIKLAD -->
       </div>
