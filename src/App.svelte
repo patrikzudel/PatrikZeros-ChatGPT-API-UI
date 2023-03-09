@@ -179,15 +179,16 @@
     let ticks = false;
     let currentHistory = $conversations[$chosenConversationId].history;
     let currentConvId = $chosenConversationId;
+    let originalMsg = msg;
     let roleMsg: ChatCompletionRequestMessage = {
       role: $defaultAssistantRole.type as ChatCompletionRequestMessageRoleEnum,
       content: $conversations[$chosenConversationId].assistantRole,
     };
     msg = [roleMsg, ...msg];
-    console.log("Message:");
+    console.log("Creating stream");
+    console.log("New message:");
     console.log(msg);
     let done = false;
-    console.log("Creating stream");
     currentHistory = [...currentHistory];
     let source = new SSE("https://api.openai.com/v1/chat/completions", {
       headers: {
@@ -259,7 +260,6 @@
     source.addEventListener("error", (e) => {
       if (done) return;
       configuration = null;
-      waitingForResponse = false;
       let errorData;
       try {
         errorData = JSON.parse(e.data);
@@ -274,7 +274,23 @@
       let errorMessage = errorData.error.message;
 
       console.log("Attempted message tokens");
-      console.log(countMessagesTokens(currentHistory));
+      console.log(countMessagesTokens(originalMsg));
+
+      // Handle messages over the token limit
+      source.close();
+      waitingForResponse = false;
+      if (errorMessage.includes("maximum context length")) {
+        if (originalMsg.length > 1) {
+          console.log(errorMessage);
+          console.log("Token limit reached, attempting to shorten history");
+          originalMsg.shift(); // Removes the oldest msg
+          createStream(originalMsg);
+          return;
+        }
+      }
+
+      console.log("Stream closed on error");
+      console.error(e);
       setHistory([
         ...currentHistory,
         {
@@ -282,9 +298,6 @@
           content: errorMessage,
         },
       ]);
-      console.log("Stream closed on error");
-      console.error(e);
-      source.close();
     });
 
     source.stream();
