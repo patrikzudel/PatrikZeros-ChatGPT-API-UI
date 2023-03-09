@@ -472,7 +472,7 @@
             >
               <img class="icon-white w-8" alt="Delete" src={DeleteIcon} />
             </button>
-            <div class="m-auto md:max-w-2xl xl:max-w-3xl px-4 py-0 text-[1rem]">
+            <div class="m-auto md:max-w-2xl px-4 py-0 text-[1rem]">
               <SvelteMarkdown
                 renderers={{
                   code: CodeRenderer,
