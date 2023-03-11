@@ -7,7 +7,7 @@
   import Topbar from "./lib/Topbar.svelte";
   import Sidebar from "./lib/Sidebar.svelte";
   import { writable } from "svelte/store";
-  import { afterUpdate } from "svelte";
+  import { afterUpdate, onMount } from "svelte";
   import Settings from "./lib/Settings.svelte";
   import SvelteMarkdown from "svelte-markdown";
   import {
@@ -62,6 +62,11 @@
   newChat();
 
   // Functions
+  onMount(() => {
+    if (window.innerWidth > 1200) {
+      moreButtonsToggle = true;
+    }
+  });
 
   // Sets up the configuration and OpenAIApi object.
   function setupConfig() {
@@ -576,7 +581,7 @@
                 sendMessage(MSG_TYPES.WITHOUT_HISTORY);
               }}>Send without history</button
             >
-            <div class="flex-col hidden md:flex ">
+            <div class="flex-col hidden sm:flex ">
               <button
                 title="Summarizing conversations saves token costs and is ideal for preserving context in lengthy discussions."
                 class="bg-good2 flex-1 rounded mb-2 py-2 px-4 mx-1"
