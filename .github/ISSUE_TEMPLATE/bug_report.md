@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+- [ ] I have read all open and **closed** Issues and confirm that this is not a duplicate.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
