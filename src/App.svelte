@@ -59,6 +59,8 @@
   let waitingForResponse: boolean = false;
   let lastMsgTokenCount: number = 0;
 
+  var summarizeDone = false;
+
   newChat();
 
   // Functions
@@ -256,13 +258,25 @@
           ],
           currentConvId
         );
-        msg = [
-          ...msg,
-          {
-            role: "assistant",
-            content: streamText,
-          },
-        ];
+        // If we did a summarize operation, history was cleared, so we want to reflect that in the token count we are about to do:
+        if (summarizeDone) {
+          msg = [
+            ...$conversations[$chosenConversationId].history,
+            {
+              role: "assistant",
+              content: streamText,
+            },
+          ];
+          summarizeDone = false;
+        } else {
+          msg = [
+            ...msg,
+            {
+              role: "assistant",
+              content: streamText,
+            },
+          ];
+        }
         addTokens(countMessagesTokens(msg));
         streamText = "";
         done = true;
@@ -332,9 +346,10 @@
   //   @param {number} tokenCount : Number of tokens.
   function addTokens(tokenCount: number) {
     let conv = $conversations;
-    conv[$chosenConversationId].conversationTokens =
-      conv[$chosenConversationId].conversationTokens + tokenCount;
+    // Only attribute token count of current history to our conversation rather than total historic use:
+    conv[$chosenConversationId].conversationTokens = tokenCount;
     conversations.set(conv);
+    // Add total token count here, which will display under Settings page to reflect our total usage:
     combinedTokens.set($combinedTokens + tokenCount);
   }
 
@@ -406,6 +421,7 @@
           },
         ];
         console.log("Chat summarized.");
+        summarizeDone = true;
         break;
       case MSG_TYPES.WITHOUT_HISTORY:
         messageHistory = [];
