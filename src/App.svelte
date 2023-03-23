@@ -354,8 +354,27 @@
           configuration = null;
           console.error(error);
         });
-      if (response) countTokens(response.data.usage);
       return response;
+    }
+  }
+
+  async function sendMessageNoStream(msg: ChatCompletionRequestMessage[]) {
+    waitingForResponse = true;
+    let currentConvId = $chosenConversationId;
+    let roleMsg: ChatCompletionRequestMessage = {
+      role: $defaultAssistantRole.type as ChatCompletionRequestMessageRoleEnum,
+      content: $conversations[currentConvId].assistantRole,
+    };
+    msg = [roleMsg, ...msg];
+    console.log("Sent message:");
+    console.log(msg);
+    let currentHistory = $conversations[currentConvId].history;
+    const response = await sendRequest(msg);
+    if (response) {
+      waitingForResponse = false;
+      const message = response.data.choices[0].message;
+      setHistory([...currentHistory, message], currentConvId);
+      lastMsgTokenCount = countTokens(response.data.usage);
     }
   }
 
@@ -377,6 +396,7 @@
     let response = await sendRequest(msg);
     if (response) {
       let message = response.data.choices[0].message.content;
+      countTokens(response.data.usage);
       setTitle(message.toString(), currentConvId);
     }
     console.log("Title created");
@@ -420,21 +440,14 @@
         break;
     }
 
-    // Send request
-    // OLD: Using sendRequest
-    // const response = await sendRequest(outgoingMessage);
-    // if (response) {
-    //   const message = response.data.choices[0].message;
-    //   setHistory([...currentHistory, message]);
-    //   countTokens(response.data.usage);
-    // }
     createStream(outgoingMessage);
+    // sendMessageNoStream(outgoingMessage);
     createTitle(currentInput);
   }
 
   //   Adds the number of tokens from a request to the combined tokens.
   //   @param {Object} usage - An object containing the total tokens used in a request.
-  function countTokens(usage) {
+  function countTokens(usage): number {
     console.log("Reported tokens from response: ");
     console.log(usage);
     let conv = $conversations;
@@ -442,6 +455,7 @@
       conv[$chosenConversationId].conversationTokens + usage.total_tokens;
     conversations.set(conv);
     combinedTokens.set($combinedTokens + usage.total_tokens);
+    return usage.total_tokens;
   }
 
   afterUpdate(() => {
