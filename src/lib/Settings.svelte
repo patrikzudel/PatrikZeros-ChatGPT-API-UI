@@ -6,12 +6,14 @@
     combinedTokens,
     defaultAssistantRole,
     gptModel,
+    streamMessages,
     type DefaultAssistantRole,
   } from "../stores/stores";
   let apiTextField = $apiKey === null ? "" : $apiKey;
   let assistantRoleField = $defaultAssistantRole.role;
   let assistantRoleTypeField = $defaultAssistantRole.type;
   let modelNameField = $gptModel.code;
+  let messageTypeField = $streamMessages.toString();
   let oldNameField = modelNameField;
   import CloseIcon from "../assets/close.svg";
 
@@ -52,6 +54,7 @@
         });
         break;
     }
+    streamMessages.set(messageTypeField === "true");
     apiKey.set(apiTextField);
     handleClose();
   }
@@ -119,6 +122,16 @@
           WARNING GPT 4 is VERY expensive!
         </h1>
       {/if}
+      <div>
+        <label for="model" class="block font-medium mb-1">Request type</label>
+        <select
+          bind:value={messageTypeField}
+          class="max-w-[256px] text-black bg-white mb-2 p-2 rounded focus:outline-none focus:bg-white "
+        >
+          <option value="true">Stream</option>
+          <option value="false">Request (Experimental)</option>
+        </select>
+      </div>
       {#if modelNameField !== oldNameField}
         <h1 class=" text-red-500 font-bold text-sm">
           Pricing updates only after saving!

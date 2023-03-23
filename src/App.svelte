@@ -20,6 +20,7 @@
     combinedTokens,
     defaultAssistantRole,
     gptModel,
+    streamMessages,
     type GptModel,
   } from "./stores/stores";
   import CodeRenderer from "./renderers/Code.svelte";
@@ -344,20 +345,49 @@
 
   //   Sends request to OpenAI API without streaming text.
   //   @param {ChatCompletionRequestMessage[]} msg - Array of messages. Probably history + new message.
-  async function sendRequest(msg: ChatCompletionRequestMessage[]) {
-    {
-      console.log("Sending request");
-      const response = await openai
-        .createChatCompletion({
-          model: $gptModel.code,
-          messages: msg,
-        })
-        .catch((error) => {
-          configuration = null;
-          console.error(error);
-        });
-      return response;
-    }
+  async function sendRequest(
+    msg: ChatCompletionRequestMessage[],
+    chatMsg: boolean = true
+  ) {
+    console.log("Sending request");
+    console.log("Sent message:");
+    console.log(msg);
+    let currentConvId = $chosenConversationId;
+    let originalMsg = msg;
+    const response = await openai
+      .createChatCompletion({
+        model: $gptModel.code,
+        messages: msg,
+      })
+      .catch((error) => {
+        configuration = null;
+        let errorData = error.response;
+        if (!errorData) {
+          errorData = {
+            data: {
+              error: {
+                message:
+                  "The servers are probably down. (Or your internet connection)",
+              },
+            },
+          };
+        }
+        console.log(errorData);
+        let errorMessage = errorData.data.error.message;
+        let currentHistory = $conversations[currentConvId].history;
+        if (chatMsg) {
+          setHistory([
+            ...currentHistory,
+            {
+              role: "system",
+              content: errorMessage,
+            },
+          ]);
+        }
+        waitingForResponse = false;
+        return null;
+      });
+    return response;
   }
 
   async function sendMessageNoStream(msg: ChatCompletionRequestMessage[]) {
@@ -368,8 +398,6 @@
       content: $conversations[currentConvId].assistantRole,
     };
     msg = [roleMsg, ...msg];
-    console.log("Sent message:");
-    console.log(msg);
     let currentHistory = $conversations[currentConvId].history;
     const response = await sendRequest(msg);
     if (response) {
@@ -397,7 +425,7 @@
           "Excluding this summarization request, summarize my previous request in a natural way in max 4 words.",
       },
     ];
-    let response = await sendRequest(msg);
+    let response = await sendRequest(msg, false);
     if (response) {
       let message = response.data.choices[0].message.content;
       countTokens(response.data.usage);
@@ -444,8 +472,8 @@
         break;
     }
 
-    createStream(outgoingMessage);
-    // sendMessageNoStream(outgoingMessage);
+    if ($streamMessages) createStream(outgoingMessage);
+    else sendMessageNoStream(outgoingMessage);
     createTitle(currentInput);
   }
 

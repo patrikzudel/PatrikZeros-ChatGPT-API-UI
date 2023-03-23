@@ -26,9 +26,13 @@ export const menuVisible = writable(false)
 
 let storedApiKey = localStorage.getItem("api_key")
 let parsedApiKey = storedApiKey !== null ? JSON.parse(storedApiKey) : null;
-
 export const apiKey:Writable<string|null> = writable(parsedApiKey)
 apiKey.subscribe((value) => localStorage.setItem("api_key", JSON.stringify(value)));
+
+let storedStreamMessages = localStorage.getItem("streamMessages")
+let parsedStreamMessages: boolean = storedStreamMessages !== null ? JSON.parse(storedStreamMessages) : true;
+export const streamMessages:Writable<boolean> = writable(parsedStreamMessages)
+streamMessages.subscribe((value) => localStorage.setItem("streamMessages", JSON.stringify(value)));
 
 let storedCombinedTokens = localStorage.getItem('combined_tokens');
 let parsedCombinedTokens: number = storedCombinedTokens !== null ? JSON.parse(storedCombinedTokens) : 0;
