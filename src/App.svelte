@@ -19,6 +19,8 @@
     type DefaultAssistantRole,
     combinedTokens,
     defaultAssistantRole,
+    gptModel,
+    type GptModel,
   } from "./stores/stores";
   import CodeRenderer from "./renderers/Code.svelte";
   import EmRenderer from "./renderers/Em.svelte";
@@ -213,7 +215,7 @@
       },
       method: "POST",
       payload: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: $gptModel.code,
         messages: msg,
         stream: true,
       }),
@@ -347,7 +349,7 @@
       console.log("Sending request");
       const response = await openai
         .createChatCompletion({
-          model: "gpt-3.5-turbo",
+          model: $gptModel.code,
           messages: msg,
         })
         .catch((error) => {
@@ -373,6 +375,8 @@
     if (response) {
       waitingForResponse = false;
       const message = response.data.choices[0].message;
+      console.log("Response message:");
+      console.log(message);
       setHistory([...currentHistory, message], currentConvId);
       lastMsgTokenCount = countTokens(response.data.usage);
     }
@@ -540,10 +544,10 @@
 
     <!-- CHAT INPUT WINDOW BEGINNING -->
     <div class="flex-col bg-primary">
-      {#if lastMsgTokenCount >= 3500}
+      {#if lastMsgTokenCount >= $gptModel.tokenLimit - 500}
         <p class="px-4 pt-1">
           Last message too long ({lastMsgTokenCount} tokens), may start losing context
-          after 4096 tokens. Summarization advised.
+          after {$gptModel.tokenLimit} tokens. Summarization advised.
         </p>
       {/if}
       <div class="flex p-2 bg-primary mt-auto">

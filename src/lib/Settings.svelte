@@ -5,11 +5,14 @@
     settingsVisible,
     combinedTokens,
     defaultAssistantRole,
+    gptModel,
     type DefaultAssistantRole,
   } from "../stores/stores";
   let apiTextField = $apiKey === null ? "" : $apiKey;
   let assistantRoleField = $defaultAssistantRole.role;
   let assistantRoleTypeField = $defaultAssistantRole.type;
+  let modelNameField = $gptModel.code;
+  let oldNameField = modelNameField;
   import CloseIcon from "../assets/close.svg";
 
   function clearTokens() {
@@ -20,6 +23,35 @@
       role: assistantRoleField,
       type: assistantRoleTypeField,
     });
+    switch (modelNameField) {
+      case "gpt-3.5-turbo":
+        gptModel.set({
+          code: "gpt-3.5-turbo",
+          name: "GPT 3.5 Turbo",
+          inputCost: 0.002,
+          outputCost: 0.002,
+          tokenLimit: 4096,
+        });
+        break;
+      case "gpt-4":
+        gptModel.set({
+          code: "gpt-4",
+          name: "GPT 4 8k",
+          inputCost: 0.03,
+          outputCost: 0.06,
+          tokenLimit: 8192,
+        });
+        break;
+      case "gpt-4-32k":
+        gptModel.set({
+          code: "gpt-4-32k",
+          name: "GPT 4 32k",
+          inputCost: 0.06,
+          outputCost: 0.12,
+          tokenLimit: 32768,
+        });
+        break;
+    }
     apiKey.set(apiTextField);
     handleClose();
   }
@@ -55,8 +87,8 @@
           bind:value={apiTextField}
         />
       </div>
-      <div class="mb-4">
-        <label for="api-key" class="block font-medium mb-2"
+      <div class="mb-0">
+        <label for="api-key" class="block font-medium mb-1"
           >Default Assistant role</label
         >
         <input
@@ -71,20 +103,51 @@
           <option value="user">User</option>
         </select>
       </div>
-      <div class="mb-4 flex justify-between items-center ">
-        <p class="block font-bold">
-          Tokens spent: {$combinedTokens.toFixed(0)} | {(
-            ($combinedTokens / 1000) *
-            0.002
-          ).toFixed(4)} $
-        </p>
-        <button
-          on:click={clearTokens}
-          class="bg-warning hover:bg-warningHover transition-colors duration-200 text-white ml-10 w-5 h-5 flex align-middle justify-center rounded"
-          style="font-size: 1rem"
+      <div>
+        <label for="model" class="block font-medium mb-1">Chosen model</label>
+        <select
+          bind:value={modelNameField}
+          class="max-w-[256px] text-black bg-white mb-2 p-2 rounded focus:outline-none focus:bg-white "
         >
-          <img class="icon-white w-3" alt="Close" src={CloseIcon} />
-        </button>
+          <option value="gpt-3.5-turbo">GPT 3.5 Turbo ($0.002)</option>
+          <option value="gpt-4">GPT 4 8k ($0.03 / $0.06)</option>
+          <option value="gpt-4-32k">GPT 4 32k ($0.06 / $0.12)</option>
+        </select>
+      </div>
+      {#if modelNameField !== "gpt-3.5-turbo"}
+        <h1 class=" text-red-500 font-bold mb-2">
+          WARNING GPT 4 is VERY expensive!
+        </h1>
+      {/if}
+      {#if modelNameField !== oldNameField}
+        <h1 class=" text-red-500 font-bold text-sm">
+          Pricing updates only after saving!
+        </h1>
+      {/if}
+      <div class="mb-4 flex flex-col justify-between items-start ">
+        <div class="flex justify-between items-center">
+          <p class="block font-bold">
+            Tokens spent: {$combinedTokens.toFixed(0)} | {(
+              ($combinedTokens / 1000) *
+              (($gptModel.inputCost + $gptModel.outputCost) / 2)
+            ).toFixed(4)} $
+          </p>
+          <button
+            on:click={clearTokens}
+            class="bg-warning hover:bg-warningHover transition-colors duration-200 text-white ml-10 w-5 h-5 flex align-middle justify-center rounded"
+            style="font-size: 1rem"
+          >
+            <img class="icon-white w-3" alt="Close" src={CloseIcon} />
+          </button>
+        </div>
+        <p class="block font-bold mt-2 text-xs">
+          {$gptModel.name} pricing.
+        </p>
+        <p class="block font-bold text-xs">
+          Averaged i/o cost per 1k tokens: {($gptModel.inputCost +
+            $gptModel.outputCost) /
+            2}
+        </p>
       </div>
       <div class="flex justify-between items-end">
         <button
