@@ -145,9 +145,11 @@
   // Creates a new conversation
   function newChat() {
     console.log("New chat");
-    if ($conversations[$conversations.length - 1].history.length === 0) {
-      chosenConversationId.set($conversations.length - 1);
-      return;
+    if ($conversations.length > 0) {
+      if ($conversations[$conversations.length - 1].history.length === 0) {
+        chosenConversationId.set($conversations.length - 1);
+        return;
+      }
     }
     input = "";
     let newConversation: Conversation = {

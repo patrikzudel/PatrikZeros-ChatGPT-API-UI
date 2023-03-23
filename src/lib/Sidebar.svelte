@@ -25,9 +25,6 @@ You are a therapist. ETC...`;
   }
 
   function deleteConversation(i: number) {
-    if ($conversations.length === 1) {
-      return;
-    }
     let conv = $conversations.filter((value, index) => index !== i);
     if (i < $chosenConversationId || i == $chosenConversationId) {
       if ($chosenConversationId !== 0) {
@@ -35,6 +32,10 @@ You are a therapist. ETC...`;
       }
     }
     conversations.set(conv);
+    if ($conversations.length === 0) {
+      dispatch("new-chat");
+      chosenConversationId.set(0);
+    }
   }
 </script>
 
