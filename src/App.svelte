@@ -490,6 +490,8 @@
       case MSG_TYPES.WITHOUT_HISTORY:
         console.log("Message without history.");
         forgetALLHistory();
+        outgoingMessage = [{ role: "user", content: currentInput }];
+        break;
       default:
       // get only messages from sendFromIndex to the end of the array
         outgoingMessage = [
