@@ -114,6 +114,11 @@
     );
     conv[$chosenConversationId].history = msgs;
     conversations.set(conv);
+
+    // adjust sendFromIndex (memory)
+    if (i < $conversations[$chosenConversationId].sendFromIndex) {
+      setSendFromIndex($conversations[$chosenConversationId].sendFromIndex - 1);
+    }
   }
 
   // Sets history in current conversation.
