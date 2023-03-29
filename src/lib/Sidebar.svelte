@@ -110,7 +110,7 @@ You are a therapist. ETC...`;
             <textarea
               bind:value={$conversations[$chosenConversationId].assistantRole}
               {placeholder}
-              class="bg-primary px-2 pt-1 mb-2 pb-3 resize-none ronded-t-none rounded-b-md focus:outline-none focus:outline-primary"
+              class="bg-primary min-h-[100px] px-2 pt-1 mb-2 pb-3 resize-none ronded-t-none rounded-b-md focus:outline-none focus:outline-primary"
             />
           {/if}
         {/each}

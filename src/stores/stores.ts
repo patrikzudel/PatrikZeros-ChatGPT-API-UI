@@ -4,6 +4,7 @@ import { type Writable, writable } from "svelte/store";
 export interface Conversation {
   history: ChatCompletionRequestMessage[];
   conversationTokens: number;
+  sendFromIndex: number;
   assistantRole: string;
   title: string;
 }
@@ -63,9 +64,20 @@ export const chosenConversationId = writable(0);
 let storedConversations = localStorage.getItem('conversations');
 let parsedConversations: Conversation[] = storedConversations !== null ? JSON.parse(storedConversations) : null;
 
+// migrate old conversations to the new format
+if (parsedConversations !== null) {
+  parsedConversations = parsedConversations.map((conversation: Conversation) => {
+    if (conversation.sendFromIndex === undefined) {  // add new field sendFromIndex: 0
+      conversation.sendFromIndex = 0;
+    }
+    return conversation;
+  });
+}
+
 export const conversations: Writable<Conversation[]> = writable(parsedConversations || [{
     history: [],
     conversationTokens: 0,
+    sendFromIndex: 0,
     assistantRole: "You are a helpful assistant.",
     title: "",
   }]);
