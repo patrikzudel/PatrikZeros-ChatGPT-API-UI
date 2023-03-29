@@ -469,13 +469,15 @@
     input = "";
     let outgoingMessage: ChatCompletionRequestMessage[];
 
+    const slicedMessageHistory = messageHistory.slice(
+      $conversations[$chosenConversationId].sendFromIndex
+    );
+
     // Select action
     switch (action) {
       case MSG_TYPES.SUMMARIZE:
-        // currentHistory = [];
-        setHistory([]);
         outgoingMessage = [
-          ...messageHistory,
+          ...slicedMessageHistory,
           {
             role: "user",
             content:
@@ -483,16 +485,13 @@
           },
         ];
         console.log("Chat summarized.");
+        forgetALLHistory();
         break;
       case MSG_TYPES.WITHOUT_HISTORY:
-        messageHistory = [];
         console.log("Message without history.");
         forgetALLHistory();
       default:
       // get only messages from sendFromIndex to the end of the array
-        const slicedMessageHistory = messageHistory.slice(
-          $conversations[$chosenConversationId].sendFromIndex
-        );
         outgoingMessage = [
           ...slicedMessageHistory,
           { role: "user", content: currentInput },
