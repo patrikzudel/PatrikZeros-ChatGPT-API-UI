@@ -32,7 +32,27 @@
           name: "GPT 3.5 Turbo",
           inputCost: 0.002,
           outputCost: 0.002,
+          tokenLimit: 4097,
+        });
+        break;
+      // gpt-3.5-turbo-0613  can be erased after June 27th
+      // as that is when the normal GPT 3.5 turbo will use the new model
+      case "gpt-3.5-turbo-0613":
+        gptModel.set({
+          code: "gpt-3.5-turbo-0613",
+          name: "GPT 3.5 Turbo - New",
+          inputCost: 0.0015,
+          outputCost: 0.0015,
           tokenLimit: 4096,
+        });
+        break;
+      case "gpt-3.5-turbo-16k":
+        gptModel.set({
+          code: "gpt-3.5-turbo-16k",
+          name: "GPT 3.5 Turbo 16k",
+          inputCost: 0.003,
+          outputCost: 0.004,
+          tokenLimit: 16384,
         });
         break;
       case "gpt-4":
@@ -113,11 +133,13 @@
           class="max-w-[256px] text-black bg-white mb-2 p-2 rounded focus:outline-none focus:bg-white "
         >
           <option value="gpt-3.5-turbo">GPT 3.5 Turbo ($0.002)</option>
+          <option value="gpt-3.5-turbo-0613">GPT 3.5 Turbo - New! ($0.0015)</option>
+          <option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16K ($0.003 / $0.004)</option>
           <option value="gpt-4">GPT 4 8k ($0.03 / $0.06)</option>
           <option value="gpt-4-32k">GPT 4 32k ($0.06 / $0.12)</option>
         </select>
       </div>
-      {#if modelNameField !== "gpt-3.5-turbo"}
+      {#if modelNameField == "gpt-4" || modelNameField == "gpt-4-32k" }
         <h1 class=" text-red-500 font-bold mb-2">
           WARNING GPT 4 is VERY expensive!
         </h1>
