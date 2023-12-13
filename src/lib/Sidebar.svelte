@@ -58,17 +58,17 @@ You are a therapist. ETC...`;
       </button>
       <button
         on:click={newChat}
-        class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-hover  transition-colors duration-200 cursor-pointer text-sm mb-2 flex-shrink-0 border border-white/50"
+        class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-hover transition-colors duration-200 cursor-pointer text-sm mb-2 flex-shrink-0 border border-white/50"
       >
         New chat
       </button>
       <div class="py-1 select-none">
-        <p class="text-left px-8 font-bold text-xl ">
+        <p class="text-left px-8 font-bold text-xl">
           PatrikZero's <br />
         </p>
-        <p class="text-center font-bold text-2xl  leading-4">ChatGPT UI</p>
+        <p class="text-center font-bold text-2xl leading-4">ChatGPT UI</p>
       </div>
-      <div class="flex flex-col h-40 my-2 flex-grow overflow-y-auto ">
+      <div class="flex flex-col h-40 my-2 flex-grow overflow-y-auto">
         <!-- TU ZACINA -->
         <!-- Test 10 times -->
         {#each $conversations.slice().reverse() as conv, i}
@@ -125,7 +125,7 @@ You are a therapist. ETC...`;
             Settings {$apiKey === null ? "(Insert API key)" : ""}
           </p>
           <p class=" text-xs text-chat">
-            {$apiKey === null ? "" : $gptModel.name}
+            {$apiKey === null ? "" : $gptModel.code}
           </p>
         </div>
       </button>

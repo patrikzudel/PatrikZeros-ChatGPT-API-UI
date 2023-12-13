@@ -29,10 +29,19 @@
       case "gpt-3.5-turbo":
         gptModel.set({
           code: "gpt-3.5-turbo",
-          name: "GPT 3.5 Turbo",
+          name: "GPT 3.5 Turbo 4k (Main)",
           inputCost: 0.002,
           outputCost: 0.002,
           tokenLimit: 4097,
+        });
+        break;
+      case "gpt-3.5-turbo-1106":
+        gptModel.set({
+          code: "gpt-3.5-turbo-1106",
+          name: "GPT 3.5 Turbo 16k (1106)",
+          inputCost: 0.001,
+          outputCost: 0.002,
+          tokenLimit: 16385,
         });
         break;
       // gpt-3.5-turbo-0613  can be erased after June 27th
@@ -40,7 +49,7 @@
       case "gpt-3.5-turbo-0613":
         gptModel.set({
           code: "gpt-3.5-turbo-0613",
-          name: "GPT 3.5 Turbo - New",
+          name: "GPT 3.5 Turbo 4k (0613)",
           inputCost: 0.0015,
           outputCost: 0.0015,
           tokenLimit: 4096,
@@ -49,7 +58,7 @@
       case "gpt-3.5-turbo-16k":
         gptModel.set({
           code: "gpt-3.5-turbo-16k",
-          name: "GPT 3.5 Turbo 16k",
+          name: "GPT 3.5 Turbo 16k (0613)",
           inputCost: 0.003,
           outputCost: 0.004,
           tokenLimit: 16384,
@@ -73,6 +82,14 @@
           tokenLimit: 32768,
         });
         break;
+      case "gpt-4-1106-preview":
+        gptModel.set({
+          code: "gpt-4-1106-preview",
+          name: "GPT 4 Turbo 128k (1106)",
+          inputCost: 0.01,
+          outputCost: 0.03,
+          tokenLimit: 128000,
+        });
     }
     streamMessages.set(messageTypeField === "true");
     apiKey.set(apiTextField);
@@ -84,8 +101,8 @@
 </script>
 
 <!-- Settings.svelte -->
-<div class="fixed z-10 inset-0  overflow-y-auto animate-fade-in">
-  <div class="flex items-center  justify-center min-h-screen">
+<div class="fixed z-10 inset-0 overflow-y-auto animate-fade-in">
+  <div class="flex items-center justify-center min-h-screen">
     <div class="bg-primary text-white rounded-lg shadow-xl p-8 relative">
       <button
         class="absolute top-0 right-0 mt-2 mr-2 text-gray-500 hover:text-gray-600"
@@ -93,7 +110,7 @@
       >
         <img class="icon-white w-8" alt="Close" src={CloseIcon} />
       </button>
-      <h2 class="text-xl mb-2 font-bold ">Settings</h2>
+      <h2 class="text-xl mb-2 font-bold">Settings</h2>
       <div class="mb-4">
         <label for="api-key" class="block font-medium mb-2"
           >API Key <a
@@ -120,7 +137,7 @@
         />
         <select
           bind:value={assistantRoleTypeField}
-          class="max-w-[86px] text-black bg-white my-2 p-2 rounded focus:outline-none focus:bg-white "
+          class="max-w-[86px] text-black bg-white my-2 p-2 rounded focus:outline-none focus:bg-white"
         >
           <option value="system">System</option>
           <option value="user">User</option>
@@ -130,16 +147,28 @@
         <label for="model" class="block font-medium mb-1">Chosen model</label>
         <select
           bind:value={modelNameField}
-          class="max-w-[256px] text-black bg-white mb-2 p-2 rounded focus:outline-none focus:bg-white "
+          class="max-w-[256px] text-black bg-white mb-2 p-2 rounded focus:outline-none focus:bg-white"
         >
-          <option value="gpt-3.5-turbo">GPT 3.5 Turbo ($0.002)</option>
-          <option value="gpt-3.5-turbo-0613">GPT 3.5 Turbo - New! ($0.0015)</option>
-          <option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16K ($0.003 / $0.004)</option>
-          <option value="gpt-4">GPT 4 8k ($0.03 / $0.06)</option>
-          <option value="gpt-4-32k">GPT 4 32k ($0.06 / $0.12)</option>
+          <option value="gpt-3.5-turbo"
+            >GPT 3.5 Turbo | 4k | Main | $0.0015</option
+          >
+          <option value="gpt-3.5-turbo-1106"
+            >GPT 3.5 Turbo | 16k | New! | v1106 | $0.001 / $0.002</option
+          >
+          <option value="gpt-3.5-turbo-0613"
+            >GPT 3.5 Turbo | 4k | v0613 | $0.0015</option
+          >
+          <option value="gpt-3.5-turbo-16k"
+            >GPT 3.5 Turbo | 16k | v0613 | $0.003 / $0.004</option
+          >
+          <option value="gpt-4">GPT 4 | 8k | $0.03 / $0.06</option>
+          <option value="gpt-4-32k">GPT 4 | 32k | $0.06 / $0.12</option>
+          <option value="gpt-4-1106-preview"
+            >GPT 4 Turbo | 128k | $0.01 / $0.03</option
+          >
         </select>
       </div>
-      {#if modelNameField == "gpt-4" || modelNameField == "gpt-4-32k" }
+      {#if modelNameField == "gpt-4" || modelNameField == "gpt-4-32k" || modelNameField == "gpt-4-1106-preview"}
         <h1 class=" text-red-500 font-bold mb-2">
           WARNING GPT 4 is VERY expensive!
         </h1>
@@ -148,7 +177,7 @@
         <label for="model" class="block font-medium mb-1">Request type</label>
         <select
           bind:value={messageTypeField}
-          class="max-w-[256px] text-black bg-white mb-2 p-2 rounded focus:outline-none focus:bg-white "
+          class="max-w-[256px] text-black bg-white mb-2 p-2 rounded focus:outline-none focus:bg-white"
         >
           <option value="true">Stream</option>
           <option value="false">Request (Experimental)</option>
@@ -159,7 +188,7 @@
           Pricing updates only after saving!
         </h1>
       {/if}
-      <div class="mb-4 flex flex-col justify-between items-start ">
+      <div class="mb-4 flex flex-col justify-between items-start">
         <div class="flex justify-between items-center">
           <p class="block font-bold">
             Tokens spent: {$combinedTokens.toFixed(0)} | {(
