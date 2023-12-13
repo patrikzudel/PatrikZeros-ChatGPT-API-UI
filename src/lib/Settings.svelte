@@ -73,6 +73,15 @@
           tokenLimit: 32768,
         });
         break;
+      case "gpt-4-1106-preview":
+        gptModel.set({
+          code: "gpt-4-1106-preview",
+          name: "GPT 4 Turbo 128k",
+          inputCost: 0.01,
+          outputCost: 0.03,
+          tokenLimit: 4096,
+        });
+        break;
     }
     streamMessages.set(messageTypeField === "true");
     apiKey.set(apiTextField);
@@ -137,9 +146,10 @@
           <option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16K ($0.003 / $0.004)</option>
           <option value="gpt-4">GPT 4 8k ($0.03 / $0.06)</option>
           <option value="gpt-4-32k">GPT 4 32k ($0.06 / $0.12)</option>
+          <option value="gpt-4-1106-preview">GPT 4 Turbo - New! ($0.01 / $0.03)</option>
         </select>
       </div>
-      {#if modelNameField == "gpt-4" || modelNameField == "gpt-4-32k" }
+      {#if modelNameField == "gpt-4" || modelNameField == "gpt-4-32k" || modelNameField == "gpt-4-1106-preview" }
         <h1 class=" text-red-500 font-bold mb-2">
           WARNING GPT 4 is VERY expensive!
         </h1>
