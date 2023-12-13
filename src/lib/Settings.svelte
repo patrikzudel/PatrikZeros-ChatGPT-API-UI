@@ -161,11 +161,11 @@
           <option value="gpt-3.5-turbo-16k"
             >GPT 3.5 Turbo | 16k | v0613 | $0.003 / $0.004</option
           >
-          <option value="gpt-4">GPT 4 | 8k | $0.03 / $0.06</option>
-          <option value="gpt-4-32k">GPT 4 | 32k | $0.06 / $0.12</option>
           <option value="gpt-4-1106-preview"
             >GPT 4 Turbo | 128k | $0.01 / $0.03</option
           >
+          <option value="gpt-4">GPT 4 | 8k | $0.03 / $0.06</option>
+          <option value="gpt-4-32k">GPT 4 | 32k | $0.06 / $0.12</option>
         </select>
       </div>
       {#if modelNameField == "gpt-4" || modelNameField == "gpt-4-32k" || modelNameField == "gpt-4-1106-preview"}
