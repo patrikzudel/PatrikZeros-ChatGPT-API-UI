@@ -33,6 +33,7 @@
   import { SSE } from "sse.js";
   import DeleteIcon from "./assets/delete.svg";
   import MoreIcon from "./assets/more.svg";
+  import HistoryIcon from "./assets/history.svg";
   import SendIcon from "./assets/send.svg";
   import Paragraph from "./renderers/Paragraph.svelte";
   import { encodeTokens } from "./Encoder";
@@ -95,6 +96,15 @@
     setupConfig();
   }
 
+  function setHistoryAtMessage(messageIndex: number) {
+    setSendFromIndex(messageIndex);
+  }
+
+  function forgetALLHistory() {
+    let messageCount = $conversations[$chosenConversationId].history.length;
+    setSendFromIndex(messageCount - 1);
+  }
+
   // Deletes message of index i in current conversation.
   // @param {number} i
   function deleteMessage(i: number) {
@@ -104,6 +114,11 @@
     );
     conv[$chosenConversationId].history = msgs;
     conversations.set(conv);
+
+    // adjust sendFromIndex (memory)
+    if (i < $conversations[$chosenConversationId].sendFromIndex) {
+      setSendFromIndex($conversations[$chosenConversationId].sendFromIndex - 1);
+    }
   }
 
   // Sets history in current conversation.
@@ -158,6 +173,7 @@
     let newConversation: Conversation = {
       history: [],
       conversationTokens: 0,
+      sendFromIndex: 0,
       assistantRole: $defaultAssistantRole.role,
       title: "",
     };
@@ -333,6 +349,13 @@
     return tokenCount;
   }
 
+  function setSendFromIndex(index: number) {
+    console.log("Setting memory index to " + index);
+    let conv = $conversations;
+    conv[$chosenConversationId].sendFromIndex = index;
+    conversations.set(conv);
+  }
+
   //   Adds the tokens to the current conversation and the global counter.
   //   @param {number} tokenCount : Number of tokens.
   function addTokens(tokenCount: number) {
@@ -446,13 +469,15 @@
     input = "";
     let outgoingMessage: ChatCompletionRequestMessage[];
 
+    const slicedMessageHistory = messageHistory.slice(
+      $conversations[$chosenConversationId].sendFromIndex
+    );
+
     // Select action
     switch (action) {
       case MSG_TYPES.SUMMARIZE:
-        // currentHistory = [];
-        setHistory([]);
         outgoingMessage = [
-          ...messageHistory,
+          ...slicedMessageHistory,
           {
             role: "user",
             content:
@@ -460,17 +485,23 @@
           },
         ];
         console.log("Chat summarized.");
+        forgetALLHistory();
         break;
       case MSG_TYPES.WITHOUT_HISTORY:
-        messageHistory = [];
         console.log("Message without history.");
+        forgetALLHistory();
+        outgoingMessage = [{ role: "user", content: currentInput }];
+        break;
       default:
+      // get only messages from sendFromIndex to the end of the array
         outgoingMessage = [
-          ...messageHistory,
+          ...slicedMessageHistory,
           { role: "user", content: currentInput },
         ];
         break;
     }
+
+    console.log("Outgoing message:", outgoingMessage);
 
     if ($streamMessages) createStream(outgoingMessage);
     else sendMessageNoStream(outgoingMessage);
@@ -523,6 +554,11 @@
     >
       <div class="flex flex-col ">
         {#each $conversations[$chosenConversationId].history as message, i}
+         {#if i === $conversations[$chosenConversationId].sendFromIndex}
+          <div class="flex flex-col items-center border-b-2 border-red-600 text-sm text-red-500">
+            <h3>Memory</h3>
+          </div>
+          {/if}
           <div
             class="message relative inline-block px-2 py-5 pb-2 {`${(() => {
               switch (message.role) {
@@ -536,6 +572,16 @@
               // This below might just be the ugliest thing I've ever seen.
             })()}`}"
           >
+
+            <button
+              title="Forget history up to this point"
+              class="forgetHistoryButton"
+              on:click={() => {
+                setHistoryAtMessage(i);
+              }}
+            >
+              <img class="icon-white w-8" alt="Delete" src={HistoryIcon} />
+            </button>
             <button
               class="deleteButton"
               on:click={() => {
@@ -656,13 +702,22 @@
   .message:hover button {
     opacity: 1;
   }
-
   .deleteButton {
     padding: 5px;
     position: absolute;
     opacity: 0;
     top: 0;
     right: 0;
+    margin: 10px;
+    transition: all 0.1s ease-in-out;
+  }
+
+  .forgetHistoryButton {
+    padding: 5px;
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: 50px;
     margin: 10px;
     transition: all 0.1s ease-in-out;
   }
