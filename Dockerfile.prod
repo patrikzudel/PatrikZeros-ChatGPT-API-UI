@@ -1,0 +1,30 @@
+# Stage 1: Build the front-end app
+# Ideally this should be pinned to a specific version tag
+FROM node:slim AS build
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json first to take advantage of caching
+COPY package*.json ./
+
+# Install dependencies, ensuring we use the exact same versions as in package-lock.json
+RUN npm ci
+
+# Copy the rest of the application code (.dockerignore prevents copying node_modules, etc.)
+COPY . .
+
+# Build the front-end app, outputting to the `./dist` directory
+RUN npm run build
+
+# Stage 2: Serve the built app using Nginx
+# Ideally this should be pinned to a specific version tag
+FROM nginx:alpine-slim
+
+# Copy the built app from the previous stage to the Nginx default HTML directory
+COPY --from=build --chown=nobody:nobody /app/dist /usr/share/nginx/html
+
+# Expose port 80 for Nginx
+EXPOSE 80
+
+# Start Nginx when the container runs
+CMD ["nginx", "-g", "daemon off;"]
