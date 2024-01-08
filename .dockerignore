@@ -1,0 +1,4 @@
+# Don't include potentially large working directories in the image
+.github/
+.vscode/
+node_modules/
